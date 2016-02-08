@@ -1,0 +1,9 @@
+@ECHO OFF
+SET DRV=N:
+SUBST %DRV% .
+IF ERRORLEVEL 1 PAUSE
+
+%~d0
+CD %~dp0
+
+"%COMMANDER_EXE%" /O /S "%DRV%"

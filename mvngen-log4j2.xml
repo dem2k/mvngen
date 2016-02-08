@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<PatternLayout pattern="[%-5p] %m%n" />
+<PatternLayout pattern="%d{HH:mm:ss} [%-5p] %m%n" />
+<PatternLayout pattern="%d{HH:mm:ss} %-5p %C.%M(%F:%L)%n%m%n%n" />
+<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %m%n" />
+
+http://logging.apache.org/log4j/2.x/manual/layouts.html
+
+ -->            
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss} [%-5p] %m%n" />
+		</Console>
+        <File name="FileHtml" fileName="logs/application-log.html" append="false">
+            <HTMLLayout charset="UTF-8" title="My Application Log" locationInfo="false" />
+        </File>
+        <File name="FilePlain" fileName="logs/application-log.txt" append="false">
+            <PatternLayout pattern="%d{HH:mm:ss} [%-5p] %m%n" />
+        </File>
+	</Appenders>
+	<Loggers>
+		<Root level="debug">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="FileHtml" />
+			<AppenderRef ref="FilePlain" />
+		</Root>
+		<Logger name="com.foo.Bar" level="error" />
+<!-- 
+<logger name="org.hibernate.cfg" level="INFO" />
+<logger name="org.hibernate.type" level="INFO" />
+<logger name="org.springframework.web" level="INFO" />
+<logger name="org.springframework.core" level="INFO" />
+<logger name="org.springframework.beans" level="INFO" />
+<logger name="org.springframework.context" level="INFO" />
+<logger name="org.springframework.boot" level="INFO" />
+-->
+		</Loggers>
+</Configuration>
