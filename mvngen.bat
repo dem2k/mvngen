@@ -1,10 +1,9 @@
 @echo off
-set starteclipsebat=zz_start_eclipse.bat
 
 if not "%_CMDPROC%" == "" (
-  echo.
-  echo WARN: geht nur mit cmd.exe nicht mit 4nt!
-  goto fehler
+	echo.
+	echo WARN: geht nur mit cmd.exe nicht mit 4nt!
+	goto fehler
 )
 
 echo.
@@ -13,8 +12,8 @@ set /p runide="Run IDE and import Preferences and Existing Maven Projects? [Yes]
 set prjname=%1
 echo.
 if "%prjname%" == "" (
-  echo.
-  set /p prjname="Please enter Projectname (this is the maven artifactId) : "
+	echo.
+	set /p prjname="Please enter Projectname (this is the maven artifactId) : "
 )
 
 if "%prjname%" == "" (
@@ -44,10 +43,20 @@ rem -------- add log4j and junit to pom --------------
 echo.
 echo modifying pom.xml ...
 rem sed "s/<dependencies>/<dependencies><dependency><groupId>log4j<\/groupId><artifactId>log4j<\/artifactId><version>1.2.17<\/version><\/dependency>/g" pom.xml >pom.tmp
-sed "s/<\/dependencies>/<dependency><groupId>ch.qos.logback<\/groupId><artifactId>logback-classic<\/artifactId><version>1.1.2<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
-sed "s/<\/properties>/<java.version>1.8<\/java.version><\/properties>/g" pom.tmp >pom.xml
-sed "s/<version>3.8.1<\/version>/<version>4.11<\/version>\n<!--\n<exclusions><exclusion><groupId>org.hamcrest<\/groupId><artifactId>hamcrest-core<\/artifactId><\/exclusion><\/exclusions>\n-->/g" pom.xml >pom.tmp
-sed "s/<\/project>/<build><plugins>\n<plugin><groupId>org.apache.maven.plugins<\/groupId><artifactId>maven-compiler-plugin<\/artifactId><version>3.1<\/version><configuration><source>${java.version}<\/source><target>${java.version}<\/target><\/configuration><\/plugin>\n<\/plugins><\/build>\n<\/project>/g" pom.tmp >pom.xml
+rem sed "s/<\/dependencies>/<dependency><groupId>ch.qos.logback<\/groupId><artifactId>logback-classic<\/artifactId><version>1.1.2<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
+sed "s/<\/dependencies>/<dependency><groupId>org.apache.logging.log4j<\/groupId><artifactId>log4j-core<\/artifactId><version>2.2<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
+sed "s/<\/properties>/<java.version>1.8<\/java.version><findbugs.version>3.0.1<\/findbugs.version><\/properties>/g" pom.tmp >pom.tmp1
+sed "s/<version>3.8.1<\/version>/<version>4.12<\/version>\n<!--<exclusions><exclusion><groupId>org.hamcrest<\/groupId><artifactId>hamcrest-core<\/artifactId><\/exclusion><\/exclusions>-->/g" pom.tmp1 >pom.tmp2
+sed "s/<\/project>/<build><plugins>\n<plugin><groupId>org.apache.maven.plugins<\/groupId><artifactId>maven-compiler-plugin<\/artifactId><version>3.3<\/version><configuration><source>${java.version}<\/source><target>${java.version}<\/target><\/configuration><\/plugin>\n<\/plugins><\/build>\n<\/project>/g" pom.tmp2 >pom.tmp3
+sed "s#</plugins>#<!--\n<plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin>\n-->\n</plugins>#g" pom.tmp3 >pom.tmp4
+sed "s#</build>#</build>\n<!--\n<reporting><plugins><plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin></plugins></reporting>\n-->#g" pom.tmp4 >pom.tmp5
+copy pom.tmp5 pom.xml
+del pom.tmp*
+
+>>pom.xml echo ^<!-- for jetty-run add to your pom.xml under /project/build/plugins/
+>>pom.xml echo    (http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
+>>pom.xml echo ^<plugin^>^<groupId^>org.eclipse.jetty^</groupId^>^<artifactId^>jetty-maven-plugin^</artifactId^>^<configuration^>^<webApp^>^<contextPath^>/%prjname%^</contextPath^>^</webApp^>^</configuration^>^</plugin^>
+>>pom.xml echo --^>
 
 rem xml ed -L -u "/_:project/_:dependencies/_:dependency/_:groupId[text()='junit']/../_:version" -v "4.11" pom.xml
 rem xml ed -L -s "/_:project/_:properties" -t elem -n "java.version" -v "1.7" x1\pom.xml
@@ -61,7 +70,6 @@ rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin -t elem -n configuration 
 rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin/_:configuration -t elem -n source -v ${java.version} pom.xml
 rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin/_:configuration -t elem -n target -v ${java.version} pom.xml
 
-del pom.tmp*
 rem --------------------------------------------------
 
 rem --- log4j -----------
@@ -69,6 +77,7 @@ echo.
 echo creating log4j.properties ...
 mkdir src\main\resources
 copy %~dpn0-log4j.properties src\main\resources\log4j.properties
+copy %~dpn0-log4j2.xml src\main\resources\log4j2.xml
 rem --------------
 
 rem --- logback ----------------------
@@ -83,6 +92,25 @@ rem call mvn eclipse:eclipse
 
  >mvn-compile.bat echo @call mvn compile
 >>mvn-compile.bat echo @if errorlevel 1 pause
+
+ >mvn-jetty-run.bat echo @SET ROOT=%prjname%
+>>mvn-jetty-run.bat echo @SET PORT=8080
+>>mvn-jetty-run.bat echo SET MAVEN_OPTS=-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=5%%PORT%%,server=y,suspend=n
+>>mvn-jetty-run.bat echo SET MAVEN_CMD=mvn -DskipTests -Djetty.reload=automatic -Djetty.scanIntervalSeconds=5 -Djetty.port=%%PORT%% -Djetty.contextPath=/%%ROOT%% jetty:run
+>>mvn-jetty-run.bat echo @TITLE JETTY %%MAVEN_CMD%%
+>>mvn-jetty-run.bat echo @START "" http://localhost:%%port%%/%%root%%/application.wadl
+>>mvn-jetty-run.bat echo @CALL %%MAVEN_CMD%%
+>>mvn-jetty-run.bat echo @IF ERRORLEVEL 1 PAUSE
+>>mvn-jetty-run.bat echo @rem -Djetty.scanIntervalSeconds=5
+>>mvn-jetty-run.bat echo @rem    The pause in seconds between sweeps of the webapp to check for changes and automatically hot redeploy if any are detected. By default this is 0, which disables hot deployment scanning. A number greater than 0 enables it.
+>>mvn-jetty-run.bat echo @rem -Djetty.reload=automatic
+>>mvn-jetty-run.bat echo @rem    Default value is "automatic", used in conjunction with a non-zero scanIntervalSeconds causes automatic hot redeploy when changes are detected. Set to "manual" instead to trigger scanning by typing a linefeed in the console running the plugin. This might be useful when you are doing a series of changes that you want to ignore until you're done. In that use, use the reload parameter.
+
+ >mvn-findbugs-gui.bat echo @call mvn findbugs:gui
+>>mvn-findbugs-gui.bat echo @if errorlevel 1 pause
+
+ >mvn-findbugs-check.bat echo @call mvn compile findbugs:check
+>>mvn-findbugs-check.bat echo @if errorlevel 1 pause
 
  >mvn-copy-dependencies.bat echo @call mvn dependency:copy-dependencies
 >>mvn-copy-dependencies.bat echo @if errorlevel 1 pause
@@ -129,10 +157,36 @@ rem call mvn eclipse:eclipse
 >>mvn-surefire-report.bat echo if errorlevel 1 pause
 >>mvn-surefire-report.bat echo start target/site/surefire-report.html
 
+
+ >map-drive.bat echo @ECHO OFF
+>>map-drive.bat echo SET DRV=N:
+>>map-drive.bat echo SUBST %%DRV%% .
+>>map-drive.bat echo IF ERRORLEVEL 1 PAUSE
+>>map-drive.bat echo %%~d0
+>>map-drive.bat echo CD %%~dp0
+>>map-drive.bat echo "%%COMMANDER_EXE%%" /O /S "%%DRV%%"
+
+
+ >map-drive-for-%prjname%.bat echo SET PRJDRV=N
+>>map-drive-for-%prjname%.bat echo IF EXIST %%PRJDRV%%:\%%~NX0 GOTO finish
+>>map-drive-for-%prjname%.bat echo %%~D0
+>>map-drive-for-%prjname%.bat echo CD "%%~DP0"
+>>map-drive-for-%prjname%.bat echo SUBST %%PRJDRV%%: /D
+>>map-drive-for-%prjname%.bat echo SUBST %%PRJDRV%%: .
+>>map-drive-for-%prjname%.bat echo IF ERRORLEVEL 1 PAUSE
+>>map-drive-for-%prjname%.bat echo :finish
+>>map-drive-for-%prjname%.bat echo %%PRJDRV%%:
+>>map-drive-for-%prjname%.bat echo CD %%PRJDRV%%:\
+>>map-drive-for-%prjname%.bat echo "%%COMMANDER_EXE%%" /O /S "%%PRJDRV%%:\"
+
+
+
 echo.
 echo configuring eclipse workspace ...
 cd ..
 call mvn eclipse:configure-workspace "-Declipse.workspace=."
+
+set starteclipsebat=zz_start_eclipse.bat
 
  >%starteclipsebat% echo @rem set JAVA_HOME=%%~dps0jdk
 >>%starteclipsebat% echo @rem set ECLIPSE_HOME=%%~dps0eclipse
@@ -148,8 +202,14 @@ call mvn eclipse:configure-workspace "-Declipse.workspace=."
 echo.
 echo creating ahk scripts ...
 copy %~dpn0-eclipse-preferences.epf eclipse-preferences.epf
-copy %~dpn0-prefs-and-projects.ahk import-preferenses-and-projects.ahk
+copy %~dpn0-prefs-and-projects.ahkx import-preferenses-and-projects.ahk
 copy %~dpn0-import-maven-projects.ahk import-maven-projects.ahk
+
+echo.
+echo copy some other files ...
+@rem copy %~dpn0-map-drive.batx map-drive.bat
+@rem copy %~dpn0-map-drive-for-project.batx map-drive-for-%prjname%.bat
+copy %~dpn0-map-drive-and-start-eclipse.batx zz_%prjname%_map_drive_and_start_eclipse.bat
 
 goto finish
 
@@ -158,6 +218,7 @@ pause
 
 :finish
 if "%runide%" == "" (
+	@echo all done. starting eclipse...
 	start import-preferenses-and-projects.ahk
 	call %starteclipsebat%
 )
