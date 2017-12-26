@@ -109,6 +109,9 @@ rem call mvn eclipse:eclipse
  >mvn-findbugs-gui.bat echo @call mvn findbugs:gui
 >>mvn-findbugs-gui.bat echo @if errorlevel 1 pause
 
+ >mvn-dependency-sources-javadoc.bat echo @call mvn dependency:sources dependency:resolve -Dclassifier=javadoc
+>>mvn-dependency-sources-javadoc.bat echo @if errorlevel 1 pause
+
  >mvn-findbugs-check.bat echo @call mvn compile findbugs:check
 >>mvn-findbugs-check.bat echo @if errorlevel 1 pause
 
@@ -158,14 +161,15 @@ rem call mvn eclipse:eclipse
 >>mvn-surefire-report.bat echo start target/site/surefire-report.html
 
 
- >map-drive.bat echo @ECHO OFF
->>map-drive.bat echo SET DRV=N:
->>map-drive.bat echo SUBST %%DRV%% .
->>map-drive.bat echo IF ERRORLEVEL 1 PAUSE
->>map-drive.bat echo %%~d0
->>map-drive.bat echo CD %%~dp0
->>map-drive.bat echo "%%COMMANDER_EXE%%" /O /S "%%DRV%%"
-
+(
+ echo @ECHO OFF
+ echo SET DRV=N:
+ echo SUBST %%DRV%% .
+ echo IF ERRORLEVEL 1 PAUSE
+ echo %%~d0
+ echo CD %%~dp0
+ echo "%%COMMANDER_EXE%%" /O /S "%%DRV%%"
+) >map-drive.bat
 
  >map-drive-for-%prjname%.bat echo SET PRJDRV=N
 >>map-drive-for-%prjname%.bat echo IF EXIST %%PRJDRV%%:\%%~NX0 GOTO finish
@@ -188,16 +192,18 @@ call mvn eclipse:configure-workspace "-Declipse.workspace=."
 
 set starteclipsebat=zz_start_eclipse.bat
 
- >%starteclipsebat% echo @rem set JAVA_HOME=%%~dps0jdk
->>%starteclipsebat% echo @rem set ECLIPSE_HOME=%%~dps0eclipse
->>%starteclipsebat% echo @rem set PATH=%%JAVA_HOME%%\bin;%%PATH%%
->>%starteclipsebat% echo @rem set MOPTS=-Xms512M -Xmx1024M
->>%starteclipsebat% echo @rem set GOPTS=-XX:+UseParallelGC -XX:+UseParallelOldGC
->>%starteclipsebat% echo @rem set XOPTS=-XX:NewRatio=1 -XX:SurvivorRatio=6 -XX:MaxTenuringThreshold=0 -XX:TargetSurvivorRatio=75
->>%starteclipsebat% echo @rem set PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
->>%starteclipsebat% echo @rem set POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
->>%starteclipsebat% echo.
->>%starteclipsebat% echo start %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
+(
+ echo @rem set JAVA_HOME=%%~dps0jdk
+ echo @rem set ECLIPSE_HOME=%%~dps0eclipse
+ echo @rem set PATH=%%JAVA_HOME%%\bin;%%PATH%%
+ echo @rem set MOPTS=-Xms512M -Xmx1024M
+ echo @rem set GOPTS=-XX:+UseParallelGC -XX:+UseParallelOldGC
+ echo @rem set XOPTS=-XX:NewRatio=1 -XX:SurvivorRatio=6 -XX:MaxTenuringThreshold=0 -XX:TargetSurvivorRatio=75
+ echo @rem set PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
+ echo @rem set POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
+ echo.
+ echo start %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
+) >%starteclipsebat%
 
 echo.
 echo creating ahk scripts ...
