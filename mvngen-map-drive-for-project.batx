@@ -1,19 +1,14 @@
+SET PRJDRV=V
+IF EXIST %PRJDRV%:\%~NX0 GOTO FINISH
 
-set PRJDRV=V
-
-if exist %PRJDRV%:\%~nx0 goto finish
-
-%~d0
-CD "%~dp0"
+%~D0
+CD "%~DP0"
 
 SUBST %PRJDRV%: /D
 SUBST %PRJDRV%: .
 IF ERRORLEVEL 1 PAUSE
 
-
-
-
-:finish
+:FINISH
 %PRJDRV%:
 CD %PRJDRV%:\
 "%COMMANDER_EXE%" /O /S "%PRJDRV%:\"

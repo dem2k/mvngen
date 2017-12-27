@@ -7,7 +7,6 @@
 @rem set PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
 @rem set POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
 
-
 SET PRJDRV=N
 IF EXIST %PRJDRV%:\%~NX0 GOTO finish
 
