@@ -55,9 +55,9 @@ echo.
 echo creating log4j.properties ^& logback.xml ...
 mkdir src\main\resources
 pushd src\main\resources
-wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/log4j2.xml
-wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/log4j.properties
-wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/logback.xml
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/log4j2.xml
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/log4j.properties
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/logback.xml
 popd
 @rem --------------
 
@@ -159,6 +159,8 @@ popd
  echo start target/site/surefire-report.html
 ) >mvn-surefire-report.bat
 
+cd ..
+
 set starteclipsebat=zz_start_eclipse.bat
 
 (
@@ -205,15 +207,13 @@ set starteclipsebat=zz_start_eclipse.bat
 
 echo.
 echo configuring eclipse workspace ...
-cd ..
 call mvn eclipse:configure-workspace "-Declipse.workspace=."
 
 echo.
 echo creating ahk scripts ...
-rem copy %~dpn0-eclipse-preferences.epf eclipse-preferences.epf
-wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/eclipse-preferences.epf
-wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/import-preferenses-and-projects.ahk
-wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/import-maven-projects.ahk
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
 
 goto finish
 
