@@ -159,6 +159,20 @@ popd
  echo start target/site/surefire-report.html
 ) >mvn-surefire-report.bat
 
+set starteclipsebat=zz_start_eclipse.bat
+
+(
+ echo @rem set JAVA_HOME=%%~dps0jdk
+ echo @rem set ECLIPSE_HOME=%%~dps0eclipse
+ echo @rem set PATH=%%JAVA_HOME%%\bin;%%PATH%%
+ echo @rem set MOPTS=-Xms512M -Xmx1024M
+ echo @rem set GOPTS=-XX:+UseParallelGC -XX:+UseParallelOldGC
+ echo @rem set XOPTS=-XX:NewRatio=1 -XX:SurvivorRatio=6 -XX:MaxTenuringThreshold=0 -XX:TargetSurvivorRatio=75
+ echo @rem set PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
+ echo @rem set POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
+ echo.
+ echo start %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
+) >%starteclipsebat%
 
 (
  echo @ECHO OFF
@@ -182,28 +196,17 @@ popd
  echo %%PRJDRV%%:
  echo CD %%PRJDRV%%:\
  echo "%%COMMANDER_EXE%%" /O /S "%%PRJDRV%%:\"
-) >map-drive-for-%prjname%.bat 
+) >map-drive-for-%prjname%.bat
 
+(
+ type map-drive-for-%prjname%.bat
+ type %starteclipsebat%
+) > map-drive-and-start-eclipse.bat
 
 echo.
 echo configuring eclipse workspace ...
 cd ..
 call mvn eclipse:configure-workspace "-Declipse.workspace=."
-
-set starteclipsebat=zz_start_eclipse.bat
-
-(
- echo @rem set JAVA_HOME=%%~dps0jdk
- echo @rem set ECLIPSE_HOME=%%~dps0eclipse
- echo @rem set PATH=%%JAVA_HOME%%\bin;%%PATH%%
- echo @rem set MOPTS=-Xms512M -Xmx1024M
- echo @rem set GOPTS=-XX:+UseParallelGC -XX:+UseParallelOldGC
- echo @rem set XOPTS=-XX:NewRatio=1 -XX:SurvivorRatio=6 -XX:MaxTenuringThreshold=0 -XX:TargetSurvivorRatio=75
- echo @rem set PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
- echo @rem set POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
- echo.
- echo start %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
-) >%starteclipsebat%
 
 echo.
 echo creating ahk scripts ...
@@ -211,10 +214,6 @@ rem copy %~dpn0-eclipse-preferences.epf eclipse-preferences.epf
 wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/eclipse-preferences.epf
 wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/import-preferenses-and-projects.ahk
 wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/import-maven-projects.ahk
-
-echo.
-echo copy some other files ...
-wget %WGET_OPTIONS% -O zz_map_drive_and_start_eclipse.bat https://github.com/dem2k/mvngen/blob/master/map-drive-and-start-eclipse.bat
 
 goto finish
 
