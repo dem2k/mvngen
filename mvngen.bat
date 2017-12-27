@@ -210,9 +210,10 @@ set starteclipsebat=zz_start_eclipse.bat
 
 echo.
 echo creating ahk scripts ...
-copy %~dpn0-eclipse-preferences.epf eclipse-preferences.epf
-copy %~dpn0-prefs-and-projects.ahkx import-preferenses-and-projects.ahk
-copy %~dpn0-import-maven-projects.ahk import-maven-projects.ahk
+rem copy %~dpn0-eclipse-preferences.epf eclipse-preferences.epf
+wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/eclipse-preferences.epf
+wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/import-preferenses-and-projects.ahk
+wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/import-maven-projects.ahk
 
 echo.
 echo copy some other files ...
