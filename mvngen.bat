@@ -221,7 +221,7 @@ goto finish
 pause
 
 :finish
-if "%runide%" == "" (
+if "%runide%" == "" OR "%runide%" == "y" OR "%runide%" == "Y" (
 	@echo all done. starting eclipse...
 	start import-preferenses-and-projects.ahk
 	call %starteclipsebat%
