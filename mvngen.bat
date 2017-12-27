@@ -208,11 +208,26 @@ REG Query HKEY_CLASSES_ROOT\Applications\idea.exe\shell\open\command |grep bin |
   type %starteclipsebat%
 ) > map-drive-and-start-eclipse.bat
 
-echo.
-echo creating ahk scripts ...
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
+( echo @echo off
+  echo wget %%WGET_OPTIONS%% https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
+  echo wget %%WGET_OPTIONS%% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
+  echo wget %%WGET_OPTIONS%% https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
+  echo echo.
+  echo set /p runide="Run Eclipse and import Preferences and existing Maven Projects? [Y/n] : "
+  echo if "%%runide%%" == "" goto runeclipse
+  echo if "%%runide%%" == "y" goto runeclipse
+  echo if "%%runide%%" == "Y" goto runeclipse
+  echo goto ende
+  echo :runeclipse
+  echo echo.
+  echo echo configuring eclipse workspace ...
+  echo call mvn eclipse:configure-workspace "-Declipse.workspace=."
+  echo echo.
+  echo echo starting eclipse...
+  echo start import-preferenses-and-projects.ahk
+  echo call zz_start_eclipse.bat
+  echo :ende
+) >wget-download-eclipse-scripts.bat
 
 goto finish
 
@@ -229,6 +244,11 @@ if "%runide%" == "E" goto runeclipse
 goto ende
 
 :runeclipse
+echo.
+echo creating ahk scripts ...
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
 echo starting eclipse...
 echo.
 echo configuring eclipse workspace ...
