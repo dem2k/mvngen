@@ -1,19 +1,22 @@
 @echo off
+setlocal
+
+set starteclipsebat=zz_start_eclipse.bat
 
 if not "%_CMDPROC%" == "" (
 	echo.
-	echo WARN: geht nur mit cmd.exe nicht mit 4nt!
+	echo WARN: This script is working only with CDM.EXE!
 	goto fehler
 )
 
 echo.
-set /p runide="Run IDE and import Preferences and Existing Maven Projects? [Y/n] : "
+set /p runide="Run IDE and import Preferences and existing Maven Projects? [Y/n] : "
 
 set prjname=%1
 echo.
 if "%prjname%" == "" (
 	echo.
-	set /p prjname="Please enter Projectname (this is the maven artifactId) : "
+	set /p prjname="Please enter Project Name (this is the maven artifactId) : "
 )
 
 if "%prjname%" == "" (
@@ -34,7 +37,8 @@ if errorlevel 1 goto fehler
 echo.
 echo modifying pom.xml ...
 rem sed "s/<\/dependencies>/<dependency><groupId>ch.qos.logback<\/groupId><artifactId>logback-classic<\/artifactId><version>1.1.2<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
-sed "s/<\/dependencies>/<dependency><groupId>org.apache.logging.log4j<\/groupId><artifactId>log4j-core<\/artifactId><version>2.9.1<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
+rem sed "s/<\/dependencies>/<dependency><groupId>org.apache.logging.log4j<\/groupId><artifactId>log4j-core<\/artifactId><version>2.9.1<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
+sed "s!</dependencies>!<dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.25</version></dependency><dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.2.3</version></dependency></dependencies>!g" pom.xml >pom.tmp
 sed "s/<\/properties>/<java.version>1.8<\/java.version><findbugs.version>3.0.1<\/findbugs.version><\/properties>/g" pom.tmp >pom.tmp1
 sed "s/<version>3.8.1<\/version>/<version>4.12<\/version>\n<!--<exclusions><exclusion><groupId>org.hamcrest<\/groupId><artifactId>hamcrest-core<\/artifactId><\/exclusion><\/exclusions>-->/g" pom.tmp1 >pom.tmp2
 sed "s/<\/project>/<build><plugins>\n<plugin><groupId>org.apache.maven.plugins<\/groupId><artifactId>maven-compiler-plugin<\/artifactId><version>3.6.1<\/version><configuration><source>${java.version}<\/source><target>${java.version}<\/target><\/configuration><\/plugin>\n<\/plugins><\/build>\n<\/project>/g" pom.tmp2 >pom.tmp3
@@ -75,10 +79,10 @@ popd
  echo @START "" http://localhost:%%port%%/%%root%%/application.wadl
  echo @CALL %%MAVEN_CMD%%
  echo @IF ERRORLEVEL 1 PAUSE
- echo @rem -Djetty.scanIntervalSeconds=5
- echo @rem    The pause in seconds between sweeps of the webapp to check for changes and automatically hot redeploy if any are detected. By default this is 0, which disables hot deployment scanning. A number greater than 0 enables it.
- echo @rem -Djetty.reload=automatic
- echo @rem    Default value is "automatic", used in conjunction with a non-zero scanIntervalSeconds causes automatic hot redeploy when changes are detected. Set to "manual" instead to trigger scanning by typing a linefeed in the console running the plugin. This might be useful when you are doing a series of changes that you want to ignore until you're done. In that use, use the reload parameter.
+ echo @REM -Djetty.scanIntervalSeconds=5
+ echo @REM    The pause in seconds between sweeps of the webapp to check for changes and automatically hot redeploy if any are detected. By default this is 0, which disables hot deployment scanning. A number greater than 0 enables it.
+ echo @REM -Djetty.reload=automatic
+ echo @REM    Default value is "automatic", used in conjunction with a non-zero scanIntervalSeconds causes automatic hot redeploy when changes are detected. Set to "manual" instead to trigger scanning by typing a linefeed in the console running the plugin. This might be useful when you are doing a series of changes that you want to ignore until you're done. In that use, use the reload parameter.
 ) >mvn-jetty-run.bat
 
 (
@@ -126,19 +130,21 @@ popd
  echo @if errorlevel 1 pause
 ) >mvn-eclipse-configure-workspace.bat 
 
- >class-runner.bat echo @echo off
->>class-runner.bat echo set CLASSPATH=target\classes;config
->>class-runner.bat echo for %%%%i in ("target\dependency\*.jar") do call :addcp %%%%i
->>class-runner.bat echo java %%*
->>class-runner.bat echo goto ende
->>class-runner.bat echo :addcp
->>class-runner.bat echo set CLASSPATH=%%1;%%CLASSPATH%%
->>class-runner.bat echo :ende
+(
+ echo @echo off
+ echo set CLASSPATH=target\classes;config
+ echo for %%%%i in ^("target\dependency\*.jar"^) do call :addcp %%%%i
+ echo java %%*
+ echo goto ende
+ echo :addcp
+ echo set CLASSPATH=%%1;%%CLASSPATH%%
+ echo :ende
+) >class-runner.bat
 
 (
- echo @call %%~dp0class-runner.bat %%~n0 %%*
+ echo @call %%~dp0class-runner.bat some.package.MainClass %%*
  echo @if errorlevel 1 pause
-) >runaclass.bat 
+) >class-runner-usage-example.bat
 
 (
  echo @call mvn exec:java -Dexec.mainClass="d2k.App" -Dexec.args="argument1" -Dexec.args="argument2"
@@ -161,23 +167,20 @@ popd
 
 cd ..
 
-set starteclipsebat=zz_start_eclipse.bat
-
 (
- echo @rem set JAVA_HOME=%%~dps0jdk
- echo @rem set ECLIPSE_HOME=%%~dps0eclipse
- echo @rem set PATH=%%JAVA_HOME%%\bin;%%PATH%%
- echo @rem set MOPTS=-Xms512M -Xmx1024M
- echo @rem set GOPTS=-XX:+UseParallelGC -XX:+UseParallelOldGC
- echo @rem set XOPTS=-XX:NewRatio=1 -XX:SurvivorRatio=6 -XX:MaxTenuringThreshold=0 -XX:TargetSurvivorRatio=75
- echo @rem set PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
- echo @rem set POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
+ echo @REM SET JAVA_HOME=%%~dps0jdk
+ echo @REM SET ECLIPSE_HOME=%%~dps0eclipse
+ echo @REM SET PATH=%%JAVA_HOME%%\bin;%%PATH%%
+ echo @REM SET MOPTS=-Xms512M -Xmx1024M
+ echo @REM SET GOPTS=-XX:+UseParallelGC -XX:+UseParallelOldGC
+ echo @REM SET XOPTS=-XX:NewRatio=1 -XX:SurvivorRatio=6 -XX:MaxTenuringThreshold=0 -XX:TargetSurvivorRatio=75
+ echo @REM SET PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
+ echo @REM SET POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
  echo.
  echo start %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
 ) >%starteclipsebat%
 
 (
- echo @ECHO OFF
  echo SET DRV=N:
  echo SUBST %%DRV%% .
  echo IF ERRORLEVEL 1 PAUSE
@@ -186,23 +189,21 @@ set starteclipsebat=zz_start_eclipse.bat
  echo "%%COMMANDER_EXE%%" /O /S "%%DRV%%"
 ) >map-drive.bat
 
-(
- echo SET PRJDRV=N
- echo IF EXIST %%PRJDRV%%:\%%~NX0 GOTO finish
- echo %%~D0
- echo CD "%%~DP0"
- echo SUBST %%PRJDRV%%: /D
- echo SUBST %%PRJDRV%%: .
- echo IF ERRORLEVEL 1 PAUSE
- echo :finish
- echo %%PRJDRV%%:
- echo CD %%PRJDRV%%:\
- echo "%%COMMANDER_EXE%%" /O /S "%%PRJDRV%%:\"
+( echo SET PRJDRV=N
+  echo IF EXIST %%PRJDRV%%:\%%~NX0 GOTO finish
+  echo %%~D0
+  echo CD "%%~DP0"
+  echo SUBST %%PRJDRV%%: /D
+  echo SUBST %%PRJDRV%%: .
+  echo IF ERRORLEVEL 1 PAUSE
+  echo :finish
+  echo %%PRJDRV%%:
+  echo CD %%PRJDRV%%:\
+  echo "%%COMMANDER_EXE%%" /O /S "%%PRJDRV%%:\"
 ) >map-drive-for-%prjname%.bat
 
-(
- type map-drive-for-%prjname%.bat
- type %starteclipsebat%
+( type map-drive-for-%prjname%.bat
+  type %starteclipsebat%
 ) > map-drive-and-start-eclipse.bat
 
 echo.
@@ -219,12 +220,18 @@ goto finish
 
 :fehler
 pause
+goto ende
 
 :finish
-if "%runide%" == "" OR "%runide%" == "y" OR "%runide%" == "Y" (
-	@echo all done. starting eclipse...
-	start import-preferenses-and-projects.ahk
-	call %starteclipsebat%
-)
+if "%runide%" == "" goto runide
+if "%runide%" == "y" goto runide
+if "%runide%" == "Y" goto runide
+goto ende
+
+:runide
+echo starting eclipse...
+start import-preferenses-and-projects.ahk
+call %starteclipsebat%
 
 :ende
+endlocal
