@@ -10,7 +10,7 @@ if not "%_CMDPROC%" == "" (
 )
 
 echo.
-set /p runide="Run IDE and import Preferences and existing Maven Projects? [Y/n] : "
+set /p runide="Run IDE and import Preferences and existing Maven Projects? [(I)dea/(E)clipe/(N)one] : "
 
 set prjname=%1
 echo.
@@ -167,6 +167,8 @@ popd
 
 cd ..
 
+REG Query HKEY_CLASSES_ROOT\Applications\idea.exe\shell\open\command |grep bin |sed "s/(Standard)    REG_SZ/START \"\"/g" |sed "s/%%1/%prjname%/g" >zz_start_intellij_idea.bat
+
 (
  echo @REM SET JAVA_HOME=%%~dps0jdk
  echo @REM SET ECLIPSE_HOME=%%~dps0eclipse
@@ -177,7 +179,7 @@ cd ..
  echo @REM SET PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
  echo @REM SET POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
  echo.
- echo start %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
+ echo START %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
 ) >%starteclipsebat%
 
 (
@@ -207,10 +209,6 @@ cd ..
 ) > map-drive-and-start-eclipse.bat
 
 echo.
-echo configuring eclipse workspace ...
-call mvn eclipse:configure-workspace "-Declipse.workspace=."
-
-echo.
 echo creating ahk scripts ...
 wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
 wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
@@ -223,15 +221,26 @@ pause
 goto ende
 
 :finish
-if "%runide%" == "" goto runide
-if "%runide%" == "y" goto runide
-if "%runide%" == "Y" goto runide
+if "%runide%" == "" goto ende
+if "%runide%" == "i" goto runidea
+if "%runide%" == "I" goto runidea
+if "%runide%" == "e" goto runeclipse
+if "%runide%" == "E" goto runeclipse
 goto ende
 
-:runide
+:runeclipse
 echo starting eclipse...
+echo.
+echo configuring eclipse workspace ...
+call mvn eclipse:configure-workspace "-Declipse.workspace=."
 start import-preferenses-and-projects.ahk
 call %starteclipsebat%
+goto ende
+
+:runidea
+echo starting idea...
+call zz_start_intellij_idea.bat
+goto ende
 
 :ende
 endlocal
