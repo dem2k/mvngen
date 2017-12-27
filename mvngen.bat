@@ -52,7 +52,7 @@ del pom.tmp*
 
 @rem --- log4j -----------
 echo.
-echo creating log4j.properties & logback.xml ...
+echo creating log4j.properties ^& logback.xml ...
 mkdir src\main\resources
 pushd src\main\resources
 wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/log4j2.xml
@@ -214,9 +214,7 @@ wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/import-maven-pro
 
 echo.
 echo copy some other files ...
-@rem copy %~dpn0-map-drive.batx map-drive.bat
-@rem copy %~dpn0-map-drive-for-project.batx map-drive-for-%prjname%.bat
-copy %~dpn0-map-drive-and-start-eclipse.batx zz_%prjname%_map_drive_and_start_eclipse.bat
+wget %WGET_OPTIONS% -O zz_map_drive_and_start_eclipse.bat https://github.com/dem2k/mvngen/blob/master/map-drive-and-start-eclipse.bat
 
 goto finish
 
