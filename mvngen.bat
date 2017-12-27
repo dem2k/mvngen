@@ -24,25 +24,15 @@ if "%prjname%" == "" (
 
 echo.
 echo starting maven archetype plugin ...
-rem call mvn archetype:create -DgroupId=deminator -DartifactId=%prjname%
-rem call mvn archetype:generate -DgroupId=dem2k -DartifactId=%prjname% -DarchetypeArtifactId=com.mycodefu:executable-jar-archetype -DinteractiveMode=false
-rem call mvn archetype:generate -DgroupId=dem2k -DartifactId=%prjname% -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-rem call mvn archetype:generate -DgroupId=dem2k -Dpackage=dem2k -Dversion=1.0-SNP -DartifactId=%prjname% -DarchetypeArtifactId=maven-archetype-quickstart
-rem call mvn archetype:generate -DgroupId=dem2k -DartifactId=%prjname% -DarchetypeArtifactId=maven-archetype-quickstart
-rem mvn archetype:generate -DgroupId=com.companyname.bank -DartifactId=consumerBanking -DarchetypeArtifactId=maven-archetype-quickstart
-call mvn archetype:generate -DgroupId=d2k -DartifactId=%prjname%
-rem call mvn archetype:generate -DartifactId=%prjname%
-
-rem if not %errorlevel% == 0 goto fehler
+call mvn archetype:generate -DgroupId=simple -DartifactId=%prjname%
 if errorlevel 1 goto fehler
 
 cd %prjname%
 if errorlevel 1 goto fehler
 
-rem -------- add log4j and junit to pom --------------
+@rem -------- add log4j and junit to pom --------------
 echo.
 echo modifying pom.xml ...
-rem sed "s/<dependencies>/<dependencies><dependency><groupId>log4j<\/groupId><artifactId>log4j<\/artifactId><version>1.2.17<\/version><\/dependency>/g" pom.xml >pom.tmp
 rem sed "s/<\/dependencies>/<dependency><groupId>ch.qos.logback<\/groupId><artifactId>logback-classic<\/artifactId><version>1.1.2<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
 sed "s/<\/dependencies>/<dependency><groupId>org.apache.logging.log4j<\/groupId><artifactId>log4j-core<\/artifactId><version>2.2<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
 sed "s/<\/properties>/<java.version>1.8<\/java.version><findbugs.version>3.0.1<\/findbugs.version><\/properties>/g" pom.tmp >pom.tmp1
@@ -58,37 +48,19 @@ del pom.tmp*
 >>pom.xml echo ^<plugin^>^<groupId^>org.eclipse.jetty^</groupId^>^<artifactId^>jetty-maven-plugin^</artifactId^>^<configuration^>^<webApp^>^<contextPath^>/%prjname%^</contextPath^>^</webApp^>^</configuration^>^</plugin^>
 >>pom.xml echo --^>
 
-rem xml ed -L -u "/_:project/_:dependencies/_:dependency/_:groupId[text()='junit']/../_:version" -v "4.11" pom.xml
-rem xml ed -L -s "/_:project/_:properties" -t elem -n "java.version" -v "1.7" x1\pom.xml
-rem xml ed -L -s /_:project -t elem -n build pom.xml
-rem xml ed -L -s /_:project/_:build -t elem -n plugins pom.xml
-rem xml ed -L -s /_:project/_:build/_:plugins -t elem -n plugin pom.xml
-rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin -t elem -n groupId -v org.apache.maven.plugins pom.xml
-rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin -t elem -n artifactId -v maven-compiler-plugin pom.xml
-rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin -t elem -n version -v 3.1 pom.xml
-rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin -t elem -n configuration pom.xml
-rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin/_:configuration -t elem -n source -v ${java.version} pom.xml
-rem xml ed -L -s /_:project/_:build/_:plugins/_:plugin/_:configuration -t elem -n target -v ${java.version} pom.xml
-
-rem --------------------------------------------------
-
-rem --- log4j -----------
+@rem --- log4j -----------
 echo.
 echo creating log4j.properties ...
 mkdir src\main\resources
 copy %~dpn0-log4j.properties src\main\resources\log4j.properties
 copy %~dpn0-log4j2.xml src\main\resources\log4j2.xml
-rem --------------
+@rem --------------
 
-rem --- logback ----------------------
+@rem --- logback ----------------------
 echo.
 echo creating logback.xml ...
 copy %~dpn0-logback.xml src\main\resources\logback.xml
-rem ----------------------------------
-
-rem echo.
-rem echo mvn eclipse:eclipse ...
-rem call mvn eclipse:eclipse
+@rem ----------------------------------
 
  >mvn-compile.bat echo @call mvn compile
 >>mvn-compile.bat echo @if errorlevel 1 pause
@@ -182,7 +154,6 @@ rem call mvn eclipse:eclipse
 >>map-drive-for-%prjname%.bat echo %%PRJDRV%%:
 >>map-drive-for-%prjname%.bat echo CD %%PRJDRV%%:\
 >>map-drive-for-%prjname%.bat echo "%%COMMANDER_EXE%%" /O /S "%%PRJDRV%%:\"
-
 
 
 echo.
