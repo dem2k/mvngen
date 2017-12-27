@@ -52,17 +52,14 @@ del pom.tmp*
 
 @rem --- log4j -----------
 echo.
-echo creating log4j.properties ...
+echo creating log4j.properties & logback.xml ...
 mkdir src\main\resources
-copy %~dpn0-log4j.properties src\main\resources\log4j.properties
-copy %~dpn0-log4j2.xml src\main\resources\log4j2.xml
+pushd src\main\resources
+wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/log4j2.xml
+wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/log4j.properties
+wget %WGET_OPTIONS% https://github.com/dem2k/mvngen/blob/master/logback.xml
+popd
 @rem --------------
-
-@rem --- logback ----------------------
-echo.
-echo creating logback.xml ...
-copy %~dpn0-logback.xml src\main\resources\logback.xml
-@rem ----------------------------------
 
 (
  echo @call mvn compile
@@ -168,8 +165,8 @@ copy %~dpn0-logback.xml src\main\resources\logback.xml
  echo SET DRV=N:
  echo SUBST %%DRV%% .
  echo IF ERRORLEVEL 1 PAUSE
- echo %%~d0
- echo CD %%~dp0
+ echo %%~D0
+ echo CD %%~DP0
  echo "%%COMMANDER_EXE%%" /O /S "%%DRV%%"
 ) >map-drive.bat
 
