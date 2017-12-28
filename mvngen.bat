@@ -1,5 +1,5 @@
 @echo off
-setlocal
+@setlocal
 
 set starteclipsebat=zz_start_eclipse.bat
 
@@ -36,12 +36,12 @@ if errorlevel 1 goto fehler
 @rem -------- add log4j and junit to pom --------------
 echo.
 echo modifying pom.xml ...
-rem sed "s/<\/dependencies>/<dependency><groupId>ch.qos.logback<\/groupId><artifactId>logback-classic<\/artifactId><version>1.1.2<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
-rem sed "s/<\/dependencies>/<dependency><groupId>org.apache.logging.log4j<\/groupId><artifactId>log4j-core<\/artifactId><version>2.9.1<\/version><\/dependency><\/dependencies>/g" pom.xml >pom.tmp
-sed "s!</dependencies>!<dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.25</version></dependency><dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.2.3</version></dependency></dependencies>!g" pom.xml >pom.tmp
-sed "s/<\/properties>/<java.version>1.8<\/java.version><findbugs.version>3.0.1<\/findbugs.version><\/properties>/g" pom.tmp >pom.tmp1
-sed "s/<version>3.8.1<\/version>/<version>4.12<\/version>\n<!--<exclusions><exclusion><groupId>org.hamcrest<\/groupId><artifactId>hamcrest-core<\/artifactId><\/exclusion><\/exclusions>-->/g" pom.tmp1 >pom.tmp2
-sed "s/<\/project>/<build><plugins>\n<plugin><groupId>org.apache.maven.plugins<\/groupId><artifactId>maven-compiler-plugin<\/artifactId><version>3.6.1<\/version><configuration><source>${java.version}<\/source><target>${java.version}<\/target><\/configuration><\/plugin>\n<\/plugins><\/build>\n<\/project>/g" pom.tmp2 >pom.tmp3
+rem sed "s#</dependencies>#<dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.1.2</version></dependency></dependencies>#g" pom.xml >pom.tmp
+rem sed "s#</dependencies>#<dependency><groupId>org.apache.logging.log4j</groupId><artifactId>log4j-core</artifactId><version>2.9.1</version></dependency></dependencies>#g" pom.xml >pom.tmp
+sed "s#</dependencies>#<dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.25</version></dependency><dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.2.3</version></dependency></dependencies>#g" pom.xml >pom.tmp
+sed "s#</properties>#<java.version>1.8</java.version><findbugs.version>3.0.1</findbugs.version></properties>#g" pom.tmp >pom.tmp1
+sed "s#<version>3.8.1</version>#<version>4.12</version>\n<!--<exclusions><exclusion><groupId>org.hamcrest</groupId><artifactId>hamcrest-core</artifactId></exclusion></exclusions>-->#g" pom.tmp1 >pom.tmp2
+sed "s#</project>#<build><plugins>\n<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.6.1</version><configuration><source>${java.version}</source><target>${java.version}</target></configuration></plugin>\n</plugins></build>\n</project>#g" pom.tmp2 >pom.tmp3
 sed "s#</plugins>#<!--\n<plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin>\n-->\n</plugins>#g" pom.tmp3 >pom.tmp4
 sed "s#</build>#</build>\n<!--\n<reporting><plugins><plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin></plugins></reporting>\n-->#g" pom.tmp4 >pom.tmp5
 copy pom.tmp5 pom.xml
@@ -59,9 +59,9 @@ echo.
 echo creating log4j.properties ^& logback.xml ...
 mkdir src\main\resources
 pushd src\main\resources
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/log4j2.xml
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/log4j.properties
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/logback.xml
+wget https://raw.githubusercontent.com/dem2k/mvngen/master/log4j2.xml
+wget https://raw.githubusercontent.com/dem2k/mvngen/master/log4j.properties
+wget https://raw.githubusercontent.com/dem2k/mvngen/master/logback.xml
 popd
 @rem --------------
 
@@ -246,9 +246,9 @@ goto ende
 :runeclipse
 echo.
 echo creating ahk scripts ...
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
-wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
+wget https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
+wget https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
+wget https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
 echo starting eclipse...
 echo.
 echo configuring eclipse workspace ...
@@ -263,4 +263,4 @@ call zz_start_intellij_idea.bat
 goto ende
 
 :ende
-endlocal
+@endlocal
