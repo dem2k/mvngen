@@ -27,7 +27,7 @@ if "%prjname%" == "" (
 
 echo.
 echo starting maven archetype plugin ...
-call mvn archetype:generate -DarchetypeArtifactId=maven-archetype-quickstart -DgroupId=simple -DartifactId=%prjname%
+call mvn archetype:generate -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.1 -DgroupId=simple -DartifactId=%prjname% -Dversion=1.0-SNAPSHOT 
 if errorlevel 1 goto fehler
 
 cd %prjname%
@@ -47,7 +47,7 @@ set RE6="s#</build>#</build>\n<!--\n<reporting><plugins><plugin><groupId>org.cod
 
 @for %%i in (%RE1% %RE2% %RE3% %RE4% %RE5% %RE6%) do (
    cat pom.xml | sed %%i > pom.new
-   move pom.new pom.xml
+   move pom.new pom.xml >nul 
 )
 
 (
