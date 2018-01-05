@@ -27,7 +27,7 @@ if "%prjname%" == "" (
 
 echo.
 echo starting maven archetype plugin ...
-call mvn archetype:generate -DgroupId=simple -DartifactId=%prjname%
+call mvn archetype:generate -DarchetypeArtifactId=maven-archetype-quickstart -DgroupId=simple -DartifactId=%prjname%
 if errorlevel 1 goto fehler
 
 cd %prjname%
