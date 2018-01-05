@@ -13,7 +13,6 @@ echo.
 set /p runide="Run IDE and import Preferences and existing Maven Projects? [(I)dea/(E)clipe/(N)one] : "
 
 set prjname=%1
-echo.
 if "%prjname%" == "" (
 	echo.
 	set /p prjname="Please enter Project Name (this is the maven artifactId) : "
@@ -56,9 +55,9 @@ echo.
 echo creating log4j.properties ^& logback.xml ...
 mkdir src\main\resources
 pushd src\main\resources
-wget https://raw.githubusercontent.com/dem2k/mvngen/master/log4j2.xml
-wget https://raw.githubusercontent.com/dem2k/mvngen/master/log4j.properties
-wget https://raw.githubusercontent.com/dem2k/mvngen/master/logback.xml
+wget --no-check-certificate https://raw.githubusercontent.com/dem2k/mvngen/master/log4j2.xml
+wget --no-check-certificate https://raw.githubusercontent.com/dem2k/mvngen/master/log4j.properties
+wget --no-check-certificate https://raw.githubusercontent.com/dem2k/mvngen/master/logback.xml
 popd
 @rem --------------
 
