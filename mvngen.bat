@@ -43,18 +43,13 @@ set RE2="s#</properties>#<java.version>1.8</java.version><findbugs.version>3.0.1
 set RE3="s#<version>3.8.1</version>#<version>4.12</version>\n<!--<exclusions><exclusion><groupId>org.hamcrest</groupId><artifactId>hamcrest-core</artifactId></exclusion></exclusions>-->#g"
 set RE4="s#</project>#<build><plugins>\n<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.7.0</version><configuration><source>${java.version}</source><target>${java.version}</target></configuration></plugin>\n</plugins></build>\n</project>#g"
 set RE5="s#</plugins>#<!--\n<plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin>\n-->\n</plugins>#g"
-set RE6="s#</build>#</build>\n<!--\n<reporting><plugins><plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin></plugins></reporting>\n-->#g"
+set RE6="s#</plugins>#\n<!-- for jetty-run add to your pom.xml under /project/build/plugins/ \(http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html\)\n<plugin><groupId>org.eclipse.jetty</groupId><artifactId>jetty-maven-plugin</artifactId><configuration><webApp><contextPath>/%prjname%</contextPath></webApp></configuration></plugin>\n-->\n</plugins>#g"
+set RE7="s#</build>#</build>\n<!--\n<reporting><plugins><plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin></plugins></reporting>\n-->#g"
 
-@for %%i in (%RE1% %RE2% %RE3% %RE4% %RE5% %RE6%) do (
+@for %%i in (%RE1% %RE2% %RE3% %RE4% %RE5% %RE6% %RE7%) do (
    cat pom.xml | sed %%i > pom.new
    move pom.new pom.xml >nul 
 )
-
-(
- echo ^<!-- for jetty-run add to your pom.xml under /project/build/plugins/ ^(http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html^)
- echo ^<plugin^>^<groupId^>org.eclipse.jetty^</groupId^>^<artifactId^>jetty-maven-plugin^</artifactId^>^<configuration^>^<webApp^>^<contextPath^>/%prjname%^</contextPath^>^</webApp^>^</configuration^>^</plugin^>
- echo --^>
-) >>pom.xml
 
 @rem --- log4j -----------
 echo.
