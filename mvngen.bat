@@ -51,8 +51,7 @@ set RE6="s#</build>#</build>\n<!--\n<reporting><plugins><plugin><groupId>org.cod
 )
 
 (
- echo ^<!-- for jetty-run add to your pom.xml under /project/build/plugins/
- echo    (http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html)
+ echo ^<!-- for jetty-run add to your pom.xml under /project/build/plugins/ ^(http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html^)
  echo ^<plugin^>^<groupId^>org.eclipse.jetty^</groupId^>^<artifactId^>jetty-maven-plugin^</artifactId^>^<configuration^>^<webApp^>^<contextPath^>/%prjname%^</contextPath^>^</webApp^>^</configuration^>^</plugin^>
  echo --^>
 ) >>pom.xml
