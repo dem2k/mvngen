@@ -9,6 +9,9 @@ if not "%_CMDPROC%" == "" (
 	goto fehler
 )
 
+if "%WGET_OPTIONS%"=="" set WGET_OPTIONS=--no-check-certificate
+if "%WGET_OPTIONS:no-check-certificate=%"=="%WGET_OPTIONS%" set WGET_OPTIONS=%WGET_OPTIONS% --no-check-certificate
+
 echo.
 set /p runide="Run IDE and import Preferences and existing Maven Projects? [(I)dea/(E)clipe/(N)one] : "
 
@@ -55,9 +58,9 @@ echo.
 echo creating log4j.properties ^& logback.xml ...
 mkdir src\main\resources
 pushd src\main\resources
-wget --no-check-certificate https://raw.githubusercontent.com/dem2k/mvngen/master/log4j2.xml
-wget --no-check-certificate https://raw.githubusercontent.com/dem2k/mvngen/master/log4j.properties
-wget --no-check-certificate https://raw.githubusercontent.com/dem2k/mvngen/master/logback.xml
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/log4j2.xml
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/log4j.properties
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/logback.xml
 popd
 @rem --------------
 
@@ -242,9 +245,9 @@ goto ende
 :runeclipse
 echo.
 echo creating ahk scripts ...
-wget https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
-wget https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
-wget https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/eclipse-preferences.epf
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
+wget %WGET_OPTIONS% https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
 echo starting eclipse...
 echo.
 echo configuring eclipse workspace ...
