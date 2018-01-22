@@ -110,7 +110,7 @@ popd
 ) >mvn-dependency-tree.bat
 
 (
- echo @call mvn com.google.code.sortpom:maven-sortpom-plugin:verify
+ echo @call mvn com.github.ekryd.sortpom:sortpom-maven-plugin:verify
  echo @if errorlevel 1 pause
 ) >mvn-sortpom-verify.bat 
 
