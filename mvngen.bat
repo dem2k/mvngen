@@ -178,7 +178,7 @@ REG Query HKEY_CLASSES_ROOT\Applications\idea.exe\shell\open\command |grep bin |
  echo @REM SET PAGOPTS=-XX:+UseLargePages -XX:LargePageSizeInBytes=4M
  echo @REM SET POPTS=-XX:PermSize=128M -XX:MaxPermSize=256M
  echo.
- echo START %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0. -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
+ echo START %%ECLIPSE_HOME%%\eclipse.exe -data %%~dps0workspace -showlocation -vmargs %%MOPTS%% %%GOPTS%% %%XOPTS%% %%PAGOPTS%% %%POPTS%%
 ) >%starteclipsebat%
 
 (
