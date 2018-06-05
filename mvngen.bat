@@ -131,7 +131,7 @@ popd
 
 (
  echo @echo off
- echo set CLASSPATH="%%~dp0target\classes";"%%~dp0config"
+ echo set CLASSPATH=%%~dp0target\classes;%%~dp0config
  echo for %%%%i in ^("%%~dp0target\dependency\*.jar"^) do call :addcp %%%%i
  echo java %%*
  echo goto ende
