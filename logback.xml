@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
 	<!-- http://logback.qos.ch/manual/layouts.html#conversionWord -->
-
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{HH:mm:ss} [%thread] %-5level|%-36logger{36}| %msg%n</pattern>
+			<pattern>%d{HH:mm:ss} %-5level| %-36logger{36}| %msg%n</pattern>
 		</encoder>
 	</appender>
-
 	<appender name="FILEHTML" class="ch.qos.logback.core.FileAppender">
 		<file>application-log.html</file>
 		<append>false</append>
@@ -24,7 +21,6 @@
 			</layout>
 		</encoder>
 	</appender>
-	
 	<appender name="FILEXML" class="ch.qos.logback.core.FileAppender">
 	<file>application-log.xml</file>
 	<append>false</append>

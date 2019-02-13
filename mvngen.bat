@@ -13,7 +13,7 @@ if "%WGET_OPTIONS%"=="" set WGET_OPTIONS=--no-check-certificate
 if "%WGET_OPTIONS:no-check-certificate=%"=="%WGET_OPTIONS%" set WGET_OPTIONS=%WGET_OPTIONS% --no-check-certificate
 
 echo.
-set /p runide="Run IDE and import Preferences and existing Maven Projects? [(I)dea/(E)clipe/(N)one] : "
+set /p runide="Run IDE and import Preferences and existing Maven Projects? Eclipe, Idea, None [E/I/N] (N) : "
 
 set prjname=%1
 if "%prjname%" == "" (
@@ -41,9 +41,9 @@ echo modifying pom.xml ...
 rem sed "s#</dependencies>#<dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.1.2</version></dependency></dependencies>#g" pom.xml >pom.tmp
 rem sed "s#</dependencies>#<dependency><groupId>org.apache.logging.log4j</groupId><artifactId>log4j-core</artifactId><version>2.9.1</version></dependency></dependencies>#g" pom.xml >pom.tmp
 set RE1="s#</dependencies>#<dependency><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.25</version></dependency><dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.2.3</version></dependency></dependencies>#g"
-set RE2="s#</properties>#<java.version>1.8</java.version><findbugs.version>3.0.1</findbugs.version></properties>#g"
+set RE2="s#</properties>#<maven.compiler.source>1.8</maven.compiler.source><maven.compiler.target>1.8</maven.compiler.target><findbugs.version>3.0.5</findbugs.version></properties>#g"
 set RE3="s#<version>3.8.1</version>#<version>4.12</version>\n<!--<exclusions><exclusion><groupId>org.hamcrest</groupId><artifactId>hamcrest-core</artifactId></exclusion></exclusions>-->#g"
-set RE4="s#</project>#<build><plugins>\n<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.8.0</version><configuration><source>${java.version}</source><target>${java.version}</target></configuration></plugin>\n</plugins></build>\n</project>#g"
+set RE4="s#</project>#<build><plugins>\n<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.8.0</version></plugin>\n</plugins></build>\n</project>#g"
 set RE5="s#</plugins>#<!--\n<plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin>\n-->\n</plugins>#g"
 set RE6="s#</plugins>#\n<!-- for jetty-run add to your pom.xml under /project/build/plugins/ \(http://www.eclipse.org/jetty/documentation/current/jetty-maven-plugin.html\)\n<plugin><groupId>org.eclipse.jetty</groupId><artifactId>jetty-maven-plugin</artifactId><configuration><webApp><contextPath>/%prjname%</contextPath></webApp></configuration></plugin>\n-->\n</plugins>#g"
 set RE7="s#</build>#</build>\n<!--\n<reporting><plugins><plugin><groupId>org.codehaus.mojo</groupId><artifactId>findbugs-maven-plugin</artifactId><version>${findbugs.version}</version></plugin></plugins></reporting>\n-->#g"
@@ -212,7 +212,7 @@ REG Query HKEY_CLASSES_ROOT\Applications\idea.exe\shell\open\command |grep bin |
   echo wget %%WGET_OPTIONS%% https://raw.githubusercontent.com/dem2k/mvngen/master/import-preferenses-and-projects.ahk
   echo wget %%WGET_OPTIONS%% https://raw.githubusercontent.com/dem2k/mvngen/master/import-maven-projects.ahk
   echo echo.
-  echo set /p runide="Run Eclipse and import Preferences and existing Maven Projects? [Y/n] : "
+  echo set /p runide="Run Eclipse and import Preferences and existing Maven Projects? [Y/N] (Y) : "
   echo if "%%runide%%" == "" goto runeclipse
   echo if "%%runide%%" == "y" goto runeclipse
   echo if "%%runide%%" == "Y" goto runeclipse
@@ -235,7 +235,6 @@ pause
 goto ende
 
 :finish
-if "%runide%" == "" goto ende
 if "%runide%" == "i" goto runidea
 if "%runide%" == "I" goto runidea
 if "%runide%" == "e" goto runeclipse
